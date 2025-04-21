@@ -140,55 +140,82 @@ class Student:
         return self.average_homework_grade() != other.average_homework_grade()
 
 
-# Демонстрация работы классов
+# Функция для подсчета средней оценки за домашние задания по всем студентам в рамках конкретного курса
+def calculate_average_homework_grade(students, course_name):
+    """ Подсчет средней оценки за домашние задания по группе студентов в рамках указанного курса. :param students: list of Students :param course_name: str :return: float """
+    grades = [
+        grade
+        for student in students
+        for grade in student.homework_grades.get(course_name, [])
+    ]
+    if len(grades) == 0:
+        return 0
+    return round(sum(grades) / len(grades), 2)
+
+
+# Функция для подсчета средней оценки за лекции всех лекторов в рамках курса
+def calculate_average_lecture_grade(lecturers, course_name):
+    """ Подсчет средней оценки за лекции группы лекторов в рамках указанного курса. :param lecturers: list of Lecturers :param course_name: str :return: float """
+    grades = [
+        grade
+        for lecturer in lecturers
+        for grade in lecturer.grades.get(course_name, [])
+    ]
+    if len(grades) == 0:
+        return 0
+    return round(sum(grades) / len(grades), 2)
+
+
+# Демонстрация работы классов и функций
 if __name__ == "__main__":
-    mentor = Mentor("Иван", "Иванов")
-    lecturer = Lecturer("Андрей", "Андреев")
-    reviewer = Reviewer("Ольга", "Петрова")
-
-    # Назначили Андрея Андреева ответственным за курс "Python"
-    lecturer.add_course('Python')
-
-    # Ольга Петрова проверяет задания по курсу "Python"
-    reviewer.add_course('Python')
-
-    # Создание студентов
-    student1 = Student("Максим", "Сергеевич")
+    # Создание студентов и запись на курсы
+    student1 = Student("Максим", "Иванов")
     student2 = Student("Светлана", "Федорова")
-
-    # Максим Сергеевич записывается на курс "Python"
     student1.enroll_in_course('Python')
-
-    # Светлана Федорова тоже записалась на курс "Python"
     student2.enroll_in_course('Python')
 
-    # Ольга Петрова ставит оценку студенту Максиму Сергеевичу за работу по курсу "Python"
-    try:
-        reviewer.give_homework_grade(student1, 'Python', 8)
-        reviewer.give_homework_grade(student2, 'Python', 9)
-    except ValueError as e:
-        print(e)
+    # Присваивание оценок за домашнюю работу
+    reviewer = Reviewer("Ольга", "Олиферова")
+    reviewer.add_course('Python')
+    reviewer.give_homework_grade(student1, 'Python', 8)
+    reviewer.give_homework_grade(student2, 'Python', 9)
 
-    # Андрей Андреев получает оценку за лекцию по курсу "Python"
-    lecturer.add_grade('Python', 9.5)
+    # Создание лекторов и назначение курсов
+    lecturer1 = Lecturer("Андрей", "Андреев")
+    lecturer2 = Lecturer("Михаил", "Николаевич")
+    lecturer1.add_course('Python')
+    lecturer2.add_course('Python')
 
-    # Вывести информацию обо всех участниках проекта
-    print(reviewer)
-    print(lecturer)
+    # Присваивание оценок за лекции
+    lecturer1.add_grade('Python', 9.5)
+    lecturer2.add_grade('Python', 9.0)
+
+    # Подсчет средней оценки за домашнюю работу
+    students = [student1, student2]
+    avg_hw_grade = calculate_average_homework_grade(students, 'Python')
+    print(f"Средняя оценка за домашнюю работу по курсу 'Python': {avg_hw_grade}")
+
+    # Подсчет средней оценки за лекции
+    lecturers = [lecturer1, lecturer2]
+    avg_lecture_grade = calculate_average_lecture_grade(lecturers, 'Python')
+    print(f"Средняя оценка за лекции по курсу 'Python': {avg_lecture_grade}")
+
+    # Печать информации о студентах и преподавателях
+    print("\nИнформация о студентах:")
     print(student1)
     print(student2)
 
-    # Сравнить двух студентов по оценкам
-    if student1 > student2:
-        print(f"{student1.name} лучше справляется с домашними заданиями!")
-    else:
-        print(f"{student2.name} лучше справляется с домашними заданиями!")
+    print("\nИнформация о преподавателях:")
+    print(lecturer1)
+    print(lecturer2)
 
-    # Сравнить двух лекторов по средним оценкам
-    lecturer2 = Lecturer("Михаил", "Николаевич")
-    lecturer2.add_course('Python')
-    lecturer2.add_grade('Python', 9.0)
-    if lecturer > lecturer2:
-        print(f"{lecturer.name} читает лучшие лекции!")
+    # Сравнение студентов и лекторов
+    if student1 > student2:
+        print(f"\n{student1.name} лучше справляется с домашними заданиями!")
     else:
-        print(f"{lecturer2.name} читает лучшие лекции!")
+        print(f"\n{student2.name} лучше справляется с домашними заданиями!")
+
+    if lecturer1 > lecturer2:
+        print(f"\n{lecturer1.name} читает лучшие лекции!")
+    else:
+        print(f"\n{lecturer2.name} читает лучшие лекции!")
